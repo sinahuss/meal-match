@@ -1,39 +1,27 @@
 from flask import Flask
 from flask_cors import CORS
-from pymongo import MongoClient
-from pymongo.server_api import ServerApi
-import certifi
-from .config.dev import Config
-
-mongo_client = None
-db = None
+from .config.dev import DevConfig
+from .db import mongo_setup
 
 
-def create_app(config_class=Config):
-    global mongo_client, db
-
+def create_app(config_class=DevConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     CORS(
         app,
         resources={
-            r"/api/*": {"origins": ["http://localhost:8080", "http://127.0.0.1:8080"]}
+            r"/api/*": {
+                "origins": app.config.get(
+                    "CORS_ORIGINS", ["http://localhost:8080", "http://127.0.0.1:8080"]
+                )
+            }
         },
     )
 
     if app.config.get("MONGO_URI") and app.config.get("MONGO_DBNAME"):
         try:
-            if mongo_client is None:
-                mongo_client = MongoClient(
-                    app.config["MONGO_URI"],
-                    server_api=ServerApi("1"),
-                    tlsCAFile=certifi.where(),  # Handles SSL certificates for Atlas
-                )
-                # Ping to confirm connection
-                mongo_client.admin.command("ping")
-                print("Successfully connected to MongoDB Atlas!")
-                db = mongo_client[app.config["MONGO_DBNAME"]]
+            db = mongo_setup.init_db(app.config)
             app.extensions["pymongo_db"] = db
         except Exception as e:
             print(f"Error connecting to MongoDB Atlas: {e}")
@@ -49,6 +37,7 @@ def create_app(config_class=Config):
 
     @app.route("/health")
     def health_check():
-        return "OK", 200
+        db_status = "OK" if mongo_setup.get_db_instance() else "Unavailable"
+        return f"Flask App: OK, MongoDB: {db_status}"
 
     return app

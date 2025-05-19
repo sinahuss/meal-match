@@ -1,12 +1,4 @@
-import os
-from pathlib import Path
-from dotenv import load_dotenv
+from .base import Config
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-dotenv_path = os.path.join(BASE_DIR, ".env")
-load_dotenv(dotenv_path)
-
-class Config:
-    DEBUG = os.environ.get("FLASK_ENV") == "development"
-    MONGO_URI = os.environ.get("MONGO_ATLAS_CONNECTION_STRING")
-    MONGO_DBNAME = os.environ.get("MONGO_DB_NAME")
+class DevConfig(Config):
+    DEBUG = True
