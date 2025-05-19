@@ -3,7 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import certifi
-from .config import Config
+from .config.dev import Config
 
 mongo_client = None
 db = None
