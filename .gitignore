@@ -33,6 +33,5 @@ build/
 dist/
 *.egg-info/
 
-# Node (if using frontend)
-frontend/node_modules/
-frontend/dist/
+# Project notes (local only)
+project-notes.txt
