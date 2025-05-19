@@ -37,7 +37,7 @@ def create_app(config_class=DevConfig):
 
     @app.route("/health")
     def health_check():
-        db_status = "OK" if mongo_setup.get_db_instance() else "Unavailable"
-        return f"Flask App: OK, MongoDB: {db_status}"
+        db_status = "OK" if mongo_setup.get_db_instance() is not None else "Unavailable"
+        return f"Flask App: OK, MongoDB: {db_status}", 200
 
     return app
