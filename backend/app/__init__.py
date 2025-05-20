@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from .config.dev import DevConfig
 from .db import mongo_setup
+from app.api import register_blueprints
 
 
 def create_app(config_class=DevConfig):
@@ -30,10 +31,8 @@ def create_app(config_class=DevConfig):
     else:
         print("MongoDB URI or DBNAME not configured. Skipping MongoDB initialization.")
 
-    # Import and register blueprints (routes)
-    from .api import bp
-
-    app.register_blueprint(bp)
+    # Import and register blueprints
+    register_blueprints(app)
 
     @app.route("/health")
     def health_check():

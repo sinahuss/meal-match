@@ -1,8 +1,5 @@
-from flask import Blueprint, jsonify
-
-bp = Blueprint("api", __name__, url_prefix="/api")
+from .recipes import recipes_bp
 
 
-@bp.route("/test", methods=["GET"])
-def test_route():
-    return jsonify({"message": "Flask API is working!"}), 200
+def register_blueprints(app):
+    app.register_blueprint(recipes_bp)
