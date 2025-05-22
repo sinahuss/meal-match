@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.recipe_service import create_recipe, get_all_recipes, delete_recipe
+from app.services.recipe_service import create_recipe, get_all_recipes, delete_recipe, get_recipe_by_id
 
 recipes_bp = Blueprint("recipes", __name__, url_prefix="/recipes")
 
@@ -20,6 +20,16 @@ def delete_recipe_endpoint(recipe_id):
     try:
         deleted_count = delete_recipe(recipe_id)
         return '', 204
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 404
+    except Exception as e:
+        return jsonify({'error': 'Invalid recipe ID'}), 400
+
+@recipes_bp.route("/<recipe_id>", methods=["GET"])
+def get_recipe_by_id_endpoint(recipe_id):
+    try:
+        recipe = get_recipe_by_id(recipe_id)
+        return jsonify(recipe), 200
     except ValueError as e:
         return jsonify({'error': str(e)}), 404
     except Exception as e:

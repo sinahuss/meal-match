@@ -1,4 +1,4 @@
-from .recipes import recipes_bp
+from .recipes_api import recipes_bp
 
 
 def register_blueprints(app):
