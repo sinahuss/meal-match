@@ -24,3 +24,11 @@ def delete_recipe(recipe_id):
     if result.deleted_count == 0:
         raise ValueError("Recipe not found")
     return result.deleted_count
+
+def get_recipe_by_id(recipe_id):
+    db = get_db_instance()
+    recipe = db.recipes.find_one({"_id": ObjectId(recipe_id)})
+    if not recipe:
+        raise ValueError("Recipe not found")
+    recipe["_id"] = str(recipe["_id"])
+    return recipe
