@@ -16,6 +16,7 @@ env/
 # IDE/editor
 .vscode/
 .idea/
+.cursor/
 
 # OS files
 .DS_Store
@@ -35,4 +36,3 @@ dist/
 
 # Project notes
 project-notes.txt
-.cursor/rules/venv-rule.mdc

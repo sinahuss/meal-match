@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from app.services.recipe_service import create_recipe
+from app.services.recipe_service import create_recipe, get_all_recipes
 from app.db.mongo_setup import ensure_indexes
 
 @patch('app.services.recipe_service.get_db_instance')
@@ -45,4 +45,27 @@ def test_ensure_indexes_success():
 def test_ensure_indexes_error():
     with patch('app.db.mongo_setup.get_db_instance', side_effect=Exception("DB error")):
         result = ensure_indexes()
-        assert "error" in result 
+        assert "error" in result
+
+def test_get_all_recipes_empty():
+    mock_db = MagicMock()
+    mock_db.recipes.find.return_value = []
+    with patch('app.services.recipe_service.get_db_instance', return_value=mock_db):
+        recipes = get_all_recipes()
+        assert recipes == []
+        mock_db.recipes.find.assert_called_once()
+
+def test_get_all_recipes_nonempty():
+    mock_db = MagicMock()
+    mock_db.recipes.find.return_value = [{'_id': 1, 'name': 'R1'}, {'_id': 2, 'name': 'R2'}]
+    with patch('app.services.recipe_service.get_db_instance', return_value=mock_db):
+        recipes = get_all_recipes()
+        assert recipes[0]['_id'] == '1'
+        assert recipes[1]['_id'] == '2'
+        mock_db.recipes.find.assert_called_once()
+
+def test_create_recipe_db_error():
+    with patch('app.services.recipe_service.get_db_instance', side_effect=Exception('DB error')):
+        with pytest.raises(Exception) as excinfo:
+            create_recipe({'name': 'fail', 'ingredients': [], 'instructions': []})
+        assert 'DB error' in str(excinfo.value) 
