@@ -33,5 +33,6 @@ build/
 dist/
 *.egg-info/
 
-# Project notes (local only)
+# Project notes
 project-notes.txt
+.cursor/rules/venv-rule.mdc
