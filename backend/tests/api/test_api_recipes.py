@@ -48,3 +48,21 @@ def test_get_recipes_nonempty(client):
         response = client.get('/recipes')
         assert response.status_code == 200
         assert response.get_json() == recipes 
+
+def test_delete_recipe_success(client):
+    with patch('app.api.recipes.delete_recipe', return_value=1) as mock_delete:
+        response = client.delete('/recipes/abc123')
+        assert response.status_code == 204
+        mock_delete.assert_called_once_with('abc123')
+
+def test_delete_recipe_not_found(client):
+    with patch('app.api.recipes.delete_recipe', side_effect=ValueError('Recipe not found')):
+        response = client.delete('/recipes/abc123')
+        assert response.status_code == 404
+        assert response.get_json()['error'] == 'Recipe not found'
+
+def test_delete_recipe_invalid_id(client):
+    with patch('app.api.recipes.delete_recipe', side_effect=Exception('Invalid recipe ID')):
+        response = client.delete('/recipes/invalid!')
+        assert response.status_code == 400
+        assert response.get_json()['error'] == 'Invalid recipe ID' 

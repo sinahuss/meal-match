@@ -17,3 +17,10 @@ def get_all_recipes():
     for recipe in recipes:
         recipe["_id"] = str(recipe["_id"])
     return recipes
+
+def delete_recipe(recipe_id):
+    db = get_db_instance()
+    result = db.recipes.delete_one({"_id": ObjectId(recipe_id)})
+    if result.deleted_count == 0:
+        raise ValueError("Recipe not found")
+    return result.deleted_count
