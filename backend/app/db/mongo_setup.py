@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, IndexModel
 from pymongo.server_api import ServerApi
 import certifi
 
@@ -34,3 +34,24 @@ def get_db_instance():
     if db is None:
         raise Exception("MongoDB database instance not initialized")
     return db
+
+def ensure_indexes():
+    try:
+        db = get_db_instance()
+        indexes = [
+            IndexModel([("name", 1)]),
+            IndexModel([("tags", 1)]),
+            IndexModel([("cuisine_type", 1)]),
+            IndexModel([("dish_type", 1)]),
+            IndexModel([("servings", 1)]),
+            IndexModel([
+                ("name", "text"),
+                ("description", "text"),
+                ("search_keywords", "text")
+            ])
+        ]
+        db.recipes.create_indexes(indexes)
+        return list(db.recipes.index_information().values())
+    except Exception as e:
+        print(f"Error ensuring indexes: {e}")
+        return {"error": str(e)}

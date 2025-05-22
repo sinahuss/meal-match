@@ -24,6 +24,7 @@ def create_app(config_class=DevConfig):
         try:
             db = mongo_setup.init_db(app.config)
             app.extensions["pymongo_db"] = db
+            mongo_setup.ensure_indexes()
         except Exception as e:
             print(f"Error connecting to MongoDB Atlas: {e}")
             # Optionally, app fails startup if DB connection fails
